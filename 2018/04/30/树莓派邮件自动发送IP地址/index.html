@@ -1,0 +1,102 @@
+<html>
+<head>
+	
+	<title>树莓派邮件自动发送IP地址</title>
+	<meta name="keywords" content="fzb.me,冯宗宝,冯宗宝的blog" />
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    
+	   <link href="/css/main.css?v=3" rel="stylesheet" type="text/css" />
+    
+        <script src="/js/util.js"></script>
+        <script>
+            if(isMobile()) {
+                loadjscssfile('../css/mobile.css', 'css');
+            } else {
+                loadjscssfile('../css/desktop.css', 'css');
+            }
+        </script> 
+    
+
+    <link rel="alternate" type="application/atom+xml" href="/atom.xml" title="Atom feed">
+
+    
+	<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=3"/>
+    
+
+</head>
+
+<body>
+
+
+<h2 class="title">树莓派邮件自动发送IP地址</h2>
+<!---
+<div style="text-align:center;margin-top: -10px;">
+<div class="article-category">
+发表于2018年4月30日
+
+
+
+
+ </div>
+--->
+</div>
+
+<ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#配置msmtp和mutt自动发送邮件"><span class="toc-text">配置msmtp和mutt自动发送邮件</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#1-安装msmtp和mutt"><span class="toc-text">1.安装msmtp和mutt</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#2-配置msmtp和mutt"><span class="toc-text">2.配置msmtp和mutt</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#3-设置树莓派开机自动提取IP地址并发邮件给指定用户"><span class="toc-text">3.设置树莓派开机自动提取IP地址并发邮件给指定用户</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#4-我的经验-用户执行权限问题"><span class="toc-text">4.我的经验:用户执行权限问题</span></a></li></ol></li></ol>
+<p>树莓派3自带了WiFi,所以一般买来之后插上电配置好WiFi就扔在一个地方不用管了.但是在有些地方获取树莓派的IP确实是比较麻烦的一件事,比如用的是学校的网络,学校每天会断网,或者使用的是租房的网络,不知道路由器密码的情况.这时,如果能够有一种方法让树莓派自动发送IP地址给我,将是一件特别方便的事情.我使用的是通过发邮件的方式,让树莓派每次启动之后自动发送邮件将IP发给我,我在手机上查看就好.</p>
+<h4 id="配置msmtp和mutt自动发送邮件"><a href="#配置msmtp和mutt自动发送邮件" class="headerlink" title="配置msmtp和mutt自动发送邮件"></a>配置msmtp和mutt自动发送邮件</h4><p>发送邮件的原理我也懂得不多,主要是参考的网上的教程,我参考的是这一篇:<a href="http://www.codelast.com/%E5%8E%9F%E5%88%9B-%E8%AE%A9%E6%A0%91%E8%8E%93%E6%B4%BE%E8%87%AA%E5%8A%A8%E4%B8%8A%E6%8A%A5ip%E5%9C%B0%E5%9D%80%E5%88%B0%E9%82%AE%E7%AE%B1let-raspberry-pi-to-report-its-ip-address-via-email/" target="_blank" rel="noopener">[原创] 让树莓派自动上报IP地址到邮箱</a>.作者写的很清楚,不过这篇文章是在Arch系统下面配置的,我是用的Raspbian系统,所以我简单说下我的配置过程,给使用Raspbian的同学参考.步骤还是尽量按照原文中的步骤:)</p>
+<h5 id="1-安装msmtp和mutt"><a href="#1-安装msmtp和mutt" class="headerlink" title="1.安装msmtp和mutt"></a>1.安装msmtp和mutt</h5><p>一句话介绍下这两个软件分别是做什么的:<br>mutt: 是一个Linux下的邮件程序，Mutt 更像一个文件管理器，只不过它管理的是email。它的功能是借助各个其他的程序来实现的<br>msmtp: 是Linux下一个非常简单易用的smtp客户端。利用这个我们便可以发送邮件。<br>(这两句话引用<a href="http://coolnull.com/82.html" target="_blank" rel="noopener">自此</a>,表示感谢)</p>
+<p>Debian系列装软件很方便,直接apt就可以.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo apt install msmtp</span><br><span class="line">sudo apt install mutt</span><br></pre></td></tr></table></figure></p>
+<p>这两个软件都不大,应该很快就能装好.</p>
+<h5 id="2-配置msmtp和mutt"><a href="#2-配置msmtp和mutt" class="headerlink" title="2.配置msmtp和mutt"></a>2.配置msmtp和mutt</h5><p>装好软件之后,要分别为这两个软件编辑配置文件.这里的配置方法与参考文章中稍有不同,我当时在这里困惑了好久才搞定.<br>首先,配置文件的内容和参考文章基本相同.先配置msmtp,在用户的根目录下新建文件.msmtprc,内容如下:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">account default</span><br><span class="line">host smtp.aliyun.com</span><br><span class="line">from 你的邮箱地址</span><br><span class="line">auth plain</span><br><span class="line">user 你的邮箱地址</span><br><span class="line">password 你的邮箱密码</span><br><span class="line">logfile /var/log/msmtp.log</span><br></pre></td></tr></table></figure></p>
+<p>这里我对配置文件的内容稍微解释一下.需要我们自己修改的主要是host,from,user,password和logfile这几项.</p>
+<ul>
+<li><strong>host</strong> 你的邮箱的SMTP服务器地址,可以在邮件的网站上查到,我用的阿里云的邮箱,所以是aliyun.com后缀</li>
+<li><strong>from</strong> 这里是发件人地址,在收件方会显示,设置成你给树莓派申请的邮箱地址</li>
+<li><strong>user</strong> 这里是用户名,网上有用户说这里设置邮箱的用户名即@符号前面的字符串就可以,我没有尝试,还是设置的我的邮箱地址,建议先使用邮箱地址,配置成功之后可以自己进行修改</li>
+<li><strong>password</strong> 这个就是自己邮箱的密码,没什么好说的,但是这里是明文密码,要注意保密:)</li>
+<li><strong>logfile</strong> 这是msmtp的程序运行日志文件路径,需要自己创建,msmtp自己不会创建.在发送邮件之后程序会把发送日志写到这个路径的文件里,这里的路径是在/var下面,我前几次使用的时候都由于没有写权限而不能把日志写进去,所以如果你也使用Raspbian并且不是root用户的话你也应该会遇到权限问题写不进去,这里要修改下文件所有者,使用chown命令把这个文件修改为pi用户所有就OK了.当然你也可以选择在根目录下自己建立一个文件作为log文件,那样也不会有权限问题.</li>
+</ul>
+<p>这里要说明的一点是由于在这个文件中密码是明文保存,msmtp考虑到安全问题,会要求强制设置文件访问权限为600,所以在写好配置文件之后,需要手动修改文件权限为600,使用命令: <code>chmod 600 .msmtprc</code>.另外说下我在这里遇到的一个经验,我在最开始给树莓派申请邮箱的时候使用的是网易163的邮箱,但是配置之后,进行发送的时候总是报错发送失败,原因是邮箱服务器响应554,认为我的邮件不合法.我开始还以为是我配置出错了,后来换了邮箱试了下才知道是网易邮箱的监测机制太严格了,拒绝接受发送请求,不是我的设置的错误.这里让我浪费了2天的时间,所以后来申请阿里邮箱之后,尝试发送成功才知道我的配置没问题.如果有人在这里遇到发送失败,并且错误码也是服务器拒绝的话,建议尝试一个其他邮箱试试,说不定是邮箱服务器端的问题.<br>下面配置mutt的文件,同样在用户根目录下新建文件.muttrc,内容如下:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">set sendmail=&quot;/usr/bin/msmtp&quot;</span><br><span class="line">set use_from=yes</span><br><span class="line">set realname=&quot;RaspberryPi&quot;</span><br><span class="line">set editor=&quot;vim&quot;</span><br></pre></td></tr></table></figure></p>
+<p>这里我也对配置文件解释一下,配置不多,就4条.</p>
+<ul>
+<li><strong>sendmail</strong> 这个是用来发送邮件的程序,mutt其实是一个上层应用,负责编辑邮件内容和添加附件,实际发送要依赖别的发送程序.这里我们使用的是msmtp,就在这里写msmtp的路径.查看msmtp的路径可以用命令<code>whereis msmtp</code>.最后要注意msmtp路径名要用双引号引起来.</li>
+<li><strong>use_from</strong> 按我的写就行.说实话,这个我也不知道是什么意思~</li>
+<li><strong>realname</strong> 这个是发送邮件之后,收件方显示的发件人的名字,注意也要用引号引起来</li>
+<li><strong>editor</strong> 这个是使用mutt写邮件的时候默认的编辑器.我是emacs用户. ##</li>
+</ul>
+<p>一共配置的内容就这么多,很简单.配置完之后就可以试着发一封邮件了,发送命令为:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">echo “hello world” | mutt -s “title” xxx@gmail.com</span><br></pre></td></tr></table></figure></p>
+<p>其中echo后面的内容是邮件的正文,mutt -s 后面的引号内是邮件的主题,<a href="mailto:xxx@gmail.com" target="_blank" rel="noopener">xxx@gmail.com</a>是收件人的地址.如果配置没问题的话,你的邮箱应该能收到邮件了,下一步我们要设置树莓派在开机之后自动获取IP地址并发送邮件.</p>
+<h5 id="3-设置树莓派开机自动提取IP地址并发邮件给指定用户"><a href="#3-设置树莓派开机自动提取IP地址并发邮件给指定用户" class="headerlink" title="3.设置树莓派开机自动提取IP地址并发邮件给指定用户"></a>3.设置树莓派开机自动提取IP地址并发邮件给指定用户</h5><p>前面写了这么多,看起来已经离完成一步之遥了,但是我还是在这里被坑了2天,这里遇到的问题也是促使我写这篇文章的原因.一步步来说.按照参考文章的内容,我直接用的他的shell脚本去检测网络是否通畅,然后获取IP地址并发邮件,这个文章的作者写的很棒,我把脚本拿来直接就可以用,我也就不针对脚本详细去解释了.在这里我再把这个脚本copy一遍,当做原文的备份吧.<br>send-ip-mail.sh脚本的内容如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">#!/bin/bash</span><br><span class="line"># check network availability </span><br><span class="line">while true</span><br><span class="line">do</span><br><span class="line">TIMEOUT=5</span><br><span class="line">SITE_TO_CHECK=&quot;www.126.com&quot;</span><br><span class="line">RET_CODE=`curl -I -s --connect-timeout $TIMEOUT $SITE_TO_CHECK -w %&#123;http_code&#125; | tail -n1`</span><br><span class="line">if [ &quot;x$RET_CODE&quot; = &quot;x200&quot; ]; then</span><br><span class="line">echo &quot;Network OK, will send mail...&quot;</span><br><span class="line">break</span><br><span class="line">else</span><br><span class="line">echo &quot;Network not ready, wait...&quot;</span><br><span class="line">sleep 1s</span><br><span class="line">fi</span><br><span class="line">done</span><br><span class="line"># get the IP address of eth0, e.g. &quot;192.168.16.5&quot; </span><br><span class="line">ETH0_IP_ADDR=`ifconfig eth0 | sed -n &quot;2,2p&quot; | awk &apos;&#123;print substr($2,1)&#125;&apos;`</span><br><span class="line"># send the Email </span><br><span class="line">echo &quot;Current time: `date &apos;+%F %T&apos;`. Enjoy it&quot; | mutt -s &quot;IP Address of Raspberry Pi: $ETH0_IP_ADDR&quot; xxx@gmail.com</span><br></pre></td></tr></table></figure></p>
+<p>这里再唠叨一下,这个脚本中获取的是eth0的IP地址,如果你使用的是WiFi的话,那么要改成wlan0,我自己就是用的WiFi.还有获取IP地址这一句,这个脚本中的命令是没问题的,但是我偶然发现了一个更简洁的命令,是在<code>/etc/rc.local</code>里面,树莓派的这个文件中都默认有一个获取IP的shell语句,是<code>IP=\</code>hostname -I``可以自己修改下,更加简洁~<br>脚本写好之后,添加可执行权限,然后直接运行一遍,看看是否可以正常发送邮件,并打印log到指定文件中.如果有问题,参考log返回的信息加Google,应该很快可以解决.</p>
+<h5 id="4-我的经验-用户执行权限问题"><a href="#4-我的经验-用户执行权限问题" class="headerlink" title="4.我的经验:用户执行权限问题"></a>4.我的经验:用户执行权限问题</h5><p>下面就是添加开机自动执行了,前面已经提到过,在Raspbian系统中,把要执行的命令或者脚本写到<code>/etc/rc.local</code>文件中就OK了,按道理来说树莓派就可以按照我们的想法,开机等待获取IP,然后发送邮件.参考的文章也是到这里就结束了.但是我在执行完这些之后,重启路由器却没有收到树莓派发到的邮件,然后我尝试登录进去手动执行这个脚本就可以发送成功,甚至我把<code>/etc/rc.local</code>里面的这条脚本执行语句拷出来执行都可以发送成功.但是就是在树莓派自动执行时却不会收到邮件,我检查了发送日志确实有等待网络畅通的语句,也有发送成功的语句.我还在这里添加打印语句调试了好久.最终在网上浏览别的信息的时候发现的一句话提示了我:用户权限问题.原来是我上面配置.muttrc和.msmtprc的时候都是在用户的根目录下配置的,也就是pi用户的家目录中,所以我手动以pi身份执行的时候是成功的,因为msmtp和mutt都匹配到了正确的配置文件.但是在开机自动执行的时候,执行的用户变成了root用户,这时两个程序会去root的家目录下寻找配置文件,这当然找不到,所以就会发送失败,但是我却看不到发送失败的原因,并且手动执行的话还能成功.这个原因实在是难以想到.最后我的解决办法是复制了一份两个程序的配置文件到/root目录下面,然后用root用户手动发送一次,确认能发送成功,然后再重启一遍,就能看到树莓派自己也可以发送了.还有一个解决办法是msmtp和mutt都支持全局的配置文件,好像是<code>/etc/Msmtprc</code>和<code>/etc/Muttrc</code>,但是我没有尝试这种方法.我想如果使用全局配置文件的话,可能也就不会遇到我的这个问题了.</p>
+
+
+<!--<a href="http://yoursite.com/2018/04/30/树莓派邮件自动发送IP地址/#disqus_thread" class="article-comment-link">Comments</a>
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = ''; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+-->
+<div style="display:none">
+<script src="http://s4.cnzz.com/stat.php?id=&web_id=" language="JavaScript"></script>script>
+</div>
+
+
+
+
+
+
+</body>
+</html>
