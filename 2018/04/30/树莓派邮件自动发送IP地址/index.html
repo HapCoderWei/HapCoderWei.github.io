@@ -2,7 +2,7 @@
 <head>
 	
 	<title>树莓派邮件自动发送IP地址</title>
-	<meta name="keywords" content="fzb.me,冯宗宝,冯宗宝的blog" />
+	<meta name="keywords" content="" />
 
     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -43,8 +43,10 @@
  </div>
 --->
 </div>
+<!--
+     <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#配置msmtp和mutt自动发送邮件"><span class="toc-text">配置msmtp和mutt自动发送邮件</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#1-安装msmtp和mutt"><span class="toc-text">1.安装msmtp和mutt</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#2-配置msmtp和mutt"><span class="toc-text">2.配置msmtp和mutt</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#3-设置树莓派开机自动提取IP地址并发邮件给指定用户"><span class="toc-text">3.设置树莓派开机自动提取IP地址并发邮件给指定用户</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#4-我的经验-用户执行权限问题"><span class="toc-text">4.我的经验:用户执行权限问题</span></a></li></ol></li></ol> 
+-->
 
-<ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#配置msmtp和mutt自动发送邮件"><span class="toc-text">配置msmtp和mutt自动发送邮件</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#1-安装msmtp和mutt"><span class="toc-text">1.安装msmtp和mutt</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#2-配置msmtp和mutt"><span class="toc-text">2.配置msmtp和mutt</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#3-设置树莓派开机自动提取IP地址并发邮件给指定用户"><span class="toc-text">3.设置树莓派开机自动提取IP地址并发邮件给指定用户</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#4-我的经验-用户执行权限问题"><span class="toc-text">4.我的经验:用户执行权限问题</span></a></li></ol></li></ol>
 <p>树莓派3自带了WiFi,所以一般买来之后插上电配置好WiFi就扔在一个地方不用管了.但是在有些地方获取树莓派的IP确实是比较麻烦的一件事,比如用的是学校的网络,学校每天会断网,或者使用的是租房的网络,不知道路由器密码的情况.这时,如果能够有一种方法让树莓派自动发送IP地址给我,将是一件特别方便的事情.我使用的是通过发邮件的方式,让树莓派每次启动之后自动发送邮件将IP发给我,我在手机上查看就好.</p>
 <h4 id="配置msmtp和mutt自动发送邮件"><a href="#配置msmtp和mutt自动发送邮件" class="headerlink" title="配置msmtp和mutt自动发送邮件"></a>配置msmtp和mutt自动发送邮件</h4><p>发送邮件的原理我也懂得不多,主要是参考的网上的教程,我参考的是这一篇:<a href="http://www.codelast.com/%E5%8E%9F%E5%88%9B-%E8%AE%A9%E6%A0%91%E8%8E%93%E6%B4%BE%E8%87%AA%E5%8A%A8%E4%B8%8A%E6%8A%A5ip%E5%9C%B0%E5%9D%80%E5%88%B0%E9%82%AE%E7%AE%B1let-raspberry-pi-to-report-its-ip-address-via-email/" target="_blank" rel="noopener">[原创] 让树莓派自动上报IP地址到邮箱</a>.作者写的很清楚,不过这篇文章是在Arch系统下面配置的,我是用的Raspbian系统,所以我简单说下我的配置过程,给使用Raspbian的同学参考.步骤还是尽量按照原文中的步骤:)</p>
 <h5 id="1-安装msmtp和mutt"><a href="#1-安装msmtp和mutt" class="headerlink" title="1.安装msmtp和mutt"></a>1.安装msmtp和mutt</h5><p>一句话介绍下这两个软件分别是做什么的:<br>mutt: 是一个Linux下的邮件程序，Mutt 更像一个文件管理器，只不过它管理的是email。它的功能是借助各个其他的程序来实现的<br>msmtp: 是Linux下一个非常简单易用的smtp客户端。利用这个我们便可以发送邮件。<br>(这两句话引用<a href="http://coolnull.com/82.html" target="_blank" rel="noopener">自此</a>,表示感谢)</p>
@@ -74,7 +76,7 @@
 <h5 id="4-我的经验-用户执行权限问题"><a href="#4-我的经验-用户执行权限问题" class="headerlink" title="4.我的经验:用户执行权限问题"></a>4.我的经验:用户执行权限问题</h5><p>下面就是添加开机自动执行了,前面已经提到过,在Raspbian系统中,把要执行的命令或者脚本写到<code>/etc/rc.local</code>文件中就OK了,按道理来说树莓派就可以按照我们的想法,开机等待获取IP,然后发送邮件.参考的文章也是到这里就结束了.但是我在执行完这些之后,重启路由器却没有收到树莓派发到的邮件,然后我尝试登录进去手动执行这个脚本就可以发送成功,甚至我把<code>/etc/rc.local</code>里面的这条脚本执行语句拷出来执行都可以发送成功.但是就是在树莓派自动执行时却不会收到邮件,我检查了发送日志确实有等待网络畅通的语句,也有发送成功的语句.我还在这里添加打印语句调试了好久.最终在网上浏览别的信息的时候发现的一句话提示了我:用户权限问题.原来是我上面配置.muttrc和.msmtprc的时候都是在用户的根目录下配置的,也就是pi用户的家目录中,所以我手动以pi身份执行的时候是成功的,因为msmtp和mutt都匹配到了正确的配置文件.但是在开机自动执行的时候,执行的用户变成了root用户,这时两个程序会去root的家目录下寻找配置文件,这当然找不到,所以就会发送失败,但是我却看不到发送失败的原因,并且手动执行的话还能成功.这个原因实在是难以想到.最后我的解决办法是复制了一份两个程序的配置文件到/root目录下面,然后用root用户手动发送一次,确认能发送成功,然后再重启一遍,就能看到树莓派自己也可以发送了.还有一个解决办法是msmtp和mutt都支持全局的配置文件,好像是<code>/etc/Msmtprc</code>和<code>/etc/Muttrc</code>,但是我没有尝试这种方法.我想如果使用全局配置文件的话,可能也就不会遇到我的这个问题了.</p>
 
 
-<!--<a href="http://yoursite.com/2018/04/30/树莓派邮件自动发送IP地址/#disqus_thread" class="article-comment-link">Comments</a>
+<!--<a href="http://hapcoderwei.github.io/2018/04/30/树莓派邮件自动发送IP地址/#disqus_thread" class="article-comment-link">Comments</a>
 <div id="disqus_thread"></div>
 <script type="text/javascript">
     /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */

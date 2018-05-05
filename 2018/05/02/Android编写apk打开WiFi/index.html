@@ -2,7 +2,7 @@
 <head>
 	
 	<title>Android apk打开WiFi</title>
-	<meta name="keywords" content="fzb.me,冯宗宝,冯宗宝的blog" />
+	<meta name="keywords" content="" />
 
     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -43,8 +43,10 @@
  </div>
 --->
 </div>
+<!--
+     <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#下面开始介绍安卓apk操作WiFi过程"><span class="toc-text">下面开始介绍安卓apk操作WiFi过程:</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#总结"><span class="toc-text">总结</span></a></li></ol> 
+-->
 
-<ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#下面开始介绍安卓apk操作WiFi过程"><span class="toc-text">下面开始介绍安卓apk操作WiFi过程:</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#总结"><span class="toc-text">总结</span></a></li></ol>
 <p>&emsp;&emsp;工作以后做的是手机WiFi相关的工作,有时会用到很多操作WiFi的apk,但是因为需求不同,现有的apk或多或少的不能满足工作使用需求,所以一直想自己动手写apk,满足工作使用.但是鉴于以前几乎有接触过安卓开发,所以后来满了一本书学习了一段时间.前几天,突然灵感来了,想要自己结合学习的安卓开发知识和官方文档,尝试写一写操作WiFi的apk,竟然成功,特此记录下来,以供以后查阅方便.</p>
 <h4 id="下面开始介绍安卓apk操作WiFi过程"><a href="#下面开始介绍安卓apk操作WiFi过程" class="headerlink" title="下面开始介绍安卓apk操作WiFi过程:"></a>下面开始介绍安卓apk操作WiFi过程:</h4><p>Android的WiFi控制由WiFiManager类实现,我们编写apk操作WiFi也是通过调用这个类的方法来实现的.打开关闭WiFi的方法是:</p>
 <table>
@@ -66,7 +68,7 @@
 <h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p>通过上面几行代码已经能够实现apk中设置WiFi.WiFiManager类还有很多其他方法,分别对应WiFi的不同设置方法.具体使用时需要根据需求参考官方文档进行调用.最后附一张WiFiManager类的方法截图<br><img src="./picture/WiFiManagerScreenShot.png" alt="WiFiManager方法截图"></p>
 
 
-<!--<a href="http://yoursite.com/2018/05/02/Android编写apk打开WiFi/#disqus_thread" class="article-comment-link">Comments</a>
+<!--<a href="http://hapcoderwei.github.io/2018/05/02/Android编写apk打开WiFi/#disqus_thread" class="article-comment-link">Comments</a>
 <div id="disqus_thread"></div>
 <script type="text/javascript">
     /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
