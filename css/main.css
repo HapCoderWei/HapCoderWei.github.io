@@ -130,7 +130,6 @@ pre,
 .highlight .gutter pre {
   color: #666;
 }
-pre,
 code {
   font-family: "Input Mono", "PT Mono", Consolas, Monaco, Menlo, monospace;
 }
@@ -148,7 +147,7 @@ pre code {
 .highlight pre {
   border: none;
   margin: 0;
-  padding: 1px;
+  padding: 0px;
 }
 .highlight table {
   margin: 0;
